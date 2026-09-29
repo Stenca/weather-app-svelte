@@ -1,0 +1,29 @@
+export function formatDay(date: Date): string {
+  return new Intl.DateTimeFormat("en", { weekday: "long" }).format(date);
+}
+
+export function formatShortDate(date: Date): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+}
+
+export function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
+
+export function formatDayShort(date: Date): string {
+  return new Intl.DateTimeFormat("en-gb", { weekday: "short" }).format(date);
+}
+
+export function formatTime(date: Date): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
