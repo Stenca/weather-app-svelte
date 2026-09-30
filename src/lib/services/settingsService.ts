@@ -1,31 +1,31 @@
-import type { Settings } from "$lib/models/settings";
+import type { Settings } from '$lib/models/settings';
 
 export class SettingsService {
-  private key = "weather:settings";
+	private key = 'weather:settings';
 
-  private defaults: Settings = {
-    units: "metric",
-    theme: "dark",
-  };
+	private defaults: Settings = {
+		units: 'metric',
+		theme: 'dark'
+	};
 
-  load(): Settings {
-    const saved = localStorage.getItem(this.key);
-    if (!saved) return { ...this.defaults };
+	load(): Settings {
+		const saved = localStorage.getItem(this.key);
+		if (!saved) return { ...this.defaults };
 
-    try {
-      return { ...this.defaults, ...JSON.parse(saved) };
-    } catch {
-      return { ...this.defaults };
-    }
-  }
+		try {
+			return { ...this.defaults, ...JSON.parse(saved) };
+		} catch {
+			return { ...this.defaults };
+		}
+	}
 
-  save(settings: Settings): void {
-    localStorage.setItem(this.key, JSON.stringify(settings));
-  }
+	save(settings: Settings): void {
+		localStorage.setItem(this.key, JSON.stringify(settings));
+	}
 
-  update(patch: Partial<Settings>): Settings {
-    const next = { ...this.load(), ...patch };
-    this.save(next);
-    return next;
-  }
+	update(patch: Partial<Settings>): Settings {
+		const next = { ...this.load(), ...patch };
+		this.save(next);
+		return next;
+	}
 }

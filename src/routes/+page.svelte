@@ -1,56 +1,87 @@
 <script lang="ts">
-  import CurrentCard from "$lib/components/CurrentCard.svelte";
-  import SearchBar from "$lib/components/SearchBar.svelte";
-  import type { Weather } from "$lib/models/weather";
+	import { onMount } from 'svelte';
+	import CurrentCard from '$lib/components/CurrentCard.svelte';
+	import SearchBar from '$lib/components/SearchBar.svelte';
+	import type { Units } from '$lib/models/settings';
+	import type { City, Weather } from '$lib/models/weather';
+	import { SettingsService } from '$lib/services/settingsService';
+	import { StorageService } from '$lib/services/storageService';
+	import { WeatherService } from '$lib/services/weatherService';
 
-let searchQuery = $state("")
-let units = $state(<"metric" | "imperial">("metric"))
+	const weatherService = new WeatherService();
+	const storageService = new StorageService();
+	const settingsService = new SettingsService();
 
-const weather: Weather = {
-    city: { id: 1, name: "Paris", country: "France", latitude: 48.85, longitude: 2.35 },
-    current: {
-      time: new Date(),
-      temperature: 18,
-      apparentTemperature: 16,
-      weatherCode: 3,
-      windSpeed: 12,
-      windDirection: 220,
-      humidity: 72,
-      precipitation: 0,
-      cloudCover: 80,
-      isDay: true,
-    },
-    daily: [],
-  };
+	const DEFAULT_CITY: City = {
+		id: 0,
+		name: 'Paris',
+		latitude: 48.8566,
+		longitude: 2.3522,
+		country: 'France'
+	};
 
-function handleSearch(query: string) {
+	let searchQuery = $state('');
+	let settings = $state(settingsService.load());
+	let weather = $state<Weather | null>(null);
+	let loading = $state(false);
+	let error = $state<string | null>(null);
 
-}
+	async function loadWeather(city: City) {
+		loading = true;
+		error = null;
+		try {
+			weather = await weatherService.getWeather(city);
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to load';
+		} finally {
+			loading = false;
+		}
+	}
 
-function handleUseLocation() {
+	async function handleSearch(query: string) {
+		const cities = await weatherService.searchCities(query);
+		if (cities.length === 0) {
+			error = `No city found for "${query}"`;
+			return;
+		}
+		storageService.saveCity(cities[0]);
+		await loadWeather(cities[0]);
+	}
 
-}
+	function handleUseLocation() {
+		// later
+	}
 
-function handleToggleUnits() {
+	function handleToggleUnits() {
+		const next: Units = settings.units === 'metric' ? 'imperial' : 'metric';
+		settings = settingsService.update({ units: next });
+	}
 
-}
+	function handleToggleDetails() {
+		// later
+	}
 
-function handleToggleDetails() {
-
-}
-
+	onMount(() => {
+		const city = storageService.loadCity() ?? DEFAULT_CITY;
+		loadWeather(city);
+	});
 </script>
 
-<div class="min-h-screen flex flex-col items-center gap-4 p-8 bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
-    <SearchBar
-        bind:query={searchQuery}
-        onSearch={handleSearch}
-        onUseLocation={handleUseLocation}
-    />
-    <CurrentCard
-        {weather}
-        {units}
-        onToggleUnits={handleToggleUnits}
-        onToggleDetails={handleToggleDetails}
-    />
+<div
+	class="flex min-h-screen flex-col items-center gap-4 bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] p-8"
+>
+	<SearchBar bind:query={searchQuery} onSearch={handleSearch} onUseLocation={handleUseLocation} />
+
+	{#if loading}
+		<p class="text-white">Loading...</p>
+	{:else if error}
+		<p class="text-red-300">{error}</p>
+	{:else if weather}
+		<CurrentCard
+			{weather}
+			units={settings.units}
+			onToggleUnits={handleToggleUnits}
+			onToggleDetails={handleToggleDetails}
+		/>
+	{/if}
 </div>
