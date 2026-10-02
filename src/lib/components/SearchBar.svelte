@@ -1,46 +1,50 @@
 <script lang="ts">
-import {MapPin, Search} from "@lucide/svelte"
+	import { MapPin, Search } from '@lucide/svelte';
 
-    let { query = $bindable(""), onSearch, onUseLocation}: {
-        query?: string,
-        onSearch: (query: string) => void;
-        onUseLocation: () => void;
-    } = $props()
+	let {
+		query = $bindable(''),
+		onSearch,
+		onUseLocation
+	}: {
+		query?: string;
+		onSearch: (query: string) => void;
+		onUseLocation: () => void;
+	} = $props();
 
-    function handleSubmit(e: SubmitEvent) {
-        e.preventDefault()
-        const trimmed = query.trim()
-        if (trimmed) onSearch(trimmed)
-    }
+	function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		const trimmed = query.trim();
+		if (trimmed) onSearch(trimmed);
+	}
 </script>
 
-<form 
-    class="flex items-center gap-2 w-full max-w-md px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-xl border-white/20 shadow-lg" 
-    onsubmit={handleSubmit}
+<form
+	class="flex w-full max-w-md items-center gap-2 rounded-full border border-glass-border-strong bg-glass px-4 py-1.5 shadow-lg backdrop-blur-xl"
+	onsubmit={handleSubmit}
 >
-    <input
-    type="search"
-    class="flex-1 min-w-0 bg-transparent border-none outline-none text-white text-sm placeholder:text-white/50"
-    placeholder="Search a city..."
-    bind:value={query}
-    autocomplete="off"
-    required
-    />
+	<input
+		type="search"
+		class="min-w-0 flex-1 border-none bg-transparent text-sm text-text outline-none placeholder:text-text-faint"
+		placeholder="Search a city..."
+		bind:value={query}
+		autocomplete="off"
+		required
+	/>
 
-    <button
-    type="button"
-    class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white bg-white/15 hover:bg-white/25 active:scale-95 transition"
-    onclick={onUseLocation}
-    aria-label="Use my location"
-    >
-        <MapPin size={16}/>
-    </button>
+	<button
+		type="button"
+		class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-overlay-medium text-text transition hover:bg-overlay-strong active:scale-95"
+		onclick={onUseLocation}
+		aria-label="Use my location"
+	>
+		<MapPin size={16} />
+	</button>
 
-    <button
-        type="submit"
-        class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white bg-white/15 hover:bg-white/25 active:scale-95 transition"
-        aria-label="Search"
-    >
-        <Search size={16}/>
-    </button>
+	<button
+		type="submit"
+		class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-overlay-medium text-text transition hover:bg-overlay-strong active:scale-95"
+		aria-label="Search"
+	>
+		<Search size={16} />
+	</button>
 </form>

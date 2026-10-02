@@ -69,14 +69,14 @@
 </script>
 
 <div
-	class="flex min-h-screen flex-col items-center gap-4 bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] p-8"
+	class="flex min-h-screen flex-col items-center gap-4 bg-linear-to-br from-gradient-1 via-gradient-2 to-gradient-3 p-8"
 >
 	<SearchBar bind:query={searchQuery} onSearch={handleSearch} onUseLocation={handleUseLocation} />
 
 	{#if loading}
-		<p class="text-white">Loading...</p>
+		<p class="text-text">Loading...</p>
 	{:else if error}
-		<p class="text-red-300">{error}</p>
+		<p class="text-error-border">{error}</p>
 	{:else if weather}
 		<CurrentCard
 			{weather}
