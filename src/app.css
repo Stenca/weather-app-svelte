@@ -1,1 +1,47 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+	--color-gradient-1: #1a1a2e;
+	--color-gradient-2: #16213e;
+	--color-gradient-3: #0f3460;
+
+	--color-glass: rgba(255, 255, 255, 0.05);
+	--color-glass-hover: rgba(255, 255, 255, 0.1);
+	--color-glass-border: rgba(255, 255, 255, 0.12);
+	--color-glass-border-strong: rgba(255, 255, 255, 0.18);
+	--color-glass-border-hover: rgba(255, 255, 255, 0.2);
+	--color-glass-highlight: rgba(255, 255, 255, 0.2);
+	--color-glass-shadow: rgba(0, 0, 0, 0.2);
+
+	--color-text: #ffffff;
+	--color-text-secondary: rgba(255, 255, 255, 0.85);
+	--color-text-tertiary: rgba(255, 255, 255, 0.7);
+	--color-text-muted: rgba(255, 255, 255, 0.6);
+	--color-text-faint: rgba(255, 255, 255, 0.5);
+
+	--color-overlay-subtle: rgba(255, 255, 255, 0.05);
+	--color-overlay-light: rgba(255, 255, 255, 0.1);
+	--color-overlay-medium: rgba(255, 255, 255, 0.15);
+	--color-overlay-strong: rgba(255, 255, 255, 0.25);
+
+	--color-divider: rgba(255, 255, 255, 0.15);
+
+	--color-error: rgba(239, 68, 68, 0.15);
+	--color-error-border: rgba(239, 68, 68, 0.3);
+}
+
+body {
+	font-family:
+		'Poppins',
+		system-ui,
+		-apple-system,
+		sans-serif;
+	background: linear-gradient(
+		160deg,
+		var(--color-gradient-1) 0%,
+		var(--color-gradient-2) 50%,
+		var(--color-gradient-3) 100%
+	);
+	min-height: 100vh;
+	color: var(--color-text);
+}

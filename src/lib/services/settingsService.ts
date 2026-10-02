@@ -3,23 +3,25 @@ import type { Settings } from '$lib/models/settings';
 export class SettingsService {
 	private key = 'weather:settings';
 
-	private defaults: Settings = {
+	DEFAULTS: Settings = {
 		units: 'metric',
 		theme: 'dark'
 	};
 
 	load(): Settings {
+		if (typeof localStorage === 'undefined') return { ...this.DEFAULTS };
 		const saved = localStorage.getItem(this.key);
-		if (!saved) return { ...this.defaults };
+		if (!saved) return { ...this.DEFAULTS };
 
 		try {
-			return { ...this.defaults, ...JSON.parse(saved) };
+			return { ...this.DEFAULTS, ...JSON.parse(saved) };
 		} catch {
-			return { ...this.defaults };
+			return { ...this.DEFAULTS };
 		}
 	}
 
 	save(settings: Settings): void {
+		if (typeof localStorage === 'undefined') return;
 		localStorage.setItem(this.key, JSON.stringify(settings));
 	}
 

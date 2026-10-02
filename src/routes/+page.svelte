@@ -7,6 +7,7 @@
 	import { SettingsService } from '$lib/services/settingsService';
 	import { StorageService } from '$lib/services/storageService';
 	import { WeatherService } from '$lib/services/weatherService';
+	import Forecast from '$lib/components/Forecast.svelte';
 
 	const weatherService = new WeatherService();
 	const storageService = new StorageService();
@@ -83,5 +84,7 @@
 			onToggleUnits={handleToggleUnits}
 			onToggleDetails={handleToggleDetails}
 		/>
+
+		<Forecast daily={weather.daily} units={settings.units} />
 	{/if}
 </div>
