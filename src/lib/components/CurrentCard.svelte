@@ -2,9 +2,8 @@
 	import type { Weather } from '$lib/models/weather';
 	import type { Units } from '$lib/models/settings';
 	import { formatDate, formatDay } from '$lib/utils/date';
-	import { kmhToMph } from '$lib/utils/units';
+	import { kmhToMph, formatTemp } from '$lib/utils/units';
 	import { describeWeather } from '$lib/utils/weatherCodes';
-	import Temp from './Temp.svelte';
 	import WeatherIcon from './WeatherIcon.svelte';
 
 	let {
@@ -22,8 +21,10 @@
 	const wind = $derived(
 		Math.round(units === 'metric' ? weather.current.windSpeed : kmhToMph(weather.current.windSpeed))
 	);
-
 	const windUnit = $derived(units === 'metric' ? 'km/h' : 'mph');
+
+	const heroTemp = $derived(formatTemp(weather.current.temperature, units));
+	const feelsTemp = $derived(formatTemp(weather.current.apparentTemperature, units));
 </script>
 
 <div class="relative w-80">
@@ -38,8 +39,11 @@
 			{weather.city.name}{weather.city.country ? `, ${weather.city.country}` : ''}
 		</div>
 
-		<div class="mt-2">
-			<Temp celsius={weather.current.temperature} {units} size="large" />
+		<div class="mt-2 text-8xl leading-none font-light tracking-tight tabular-nums">
+			<span class="inline-flex items-start">
+				<span>{heroTemp.value}</span>
+				<span class="mt-[0.15em] ml-1 text-[0.35em] font-normal">{heroTemp.unit}</span>
+			</span>
 		</div>
 
 		<div class="mt-2 text-sm font-medium text-text-secondary">
@@ -55,8 +59,11 @@
 		<div class="grid w-full grid-cols-2 gap-3 border-t border-divider pt-6">
 			<div class="flex flex-col items-center gap-1">
 				<span class="text-xs tracking-wider text-text-muted uppercase">Feels like</span>
-				<span class="text-base font-medium text-text">
-					<Temp celsius={weather.current.apparentTemperature} {units} />
+				<span class="text-base font-medium text-text tabular-nums">
+					<span class="inline-flex items-start">
+						<span>{feelsTemp.value}</span>
+						<span class="mt-[0.15em] ml-0.5 text-[0.6em] font-normal">{feelsTemp.unit}</span>
+					</span>
 				</span>
 			</div>
 			<div class="flex flex-col items-center gap-1">
