@@ -4,6 +4,7 @@
 	import { formatDate, formatDay } from '$lib/utils/date';
 	import { kmhToMph, formatTemp } from '$lib/utils/units';
 	import { describeWeather } from '$lib/utils/weatherCodes';
+	import { Thermometer, Droplets, Wind as WindIcon, Cloud } from '@lucide/svelte';
 	import WeatherIcon from './WeatherIcon.svelte';
 
 	let {
@@ -58,6 +59,7 @@
 
 		<div class="grid w-full grid-cols-2 gap-3 border-t border-divider pt-6">
 			<div class="flex flex-col items-center gap-1">
+				<Thermometer class="h-4 w-4 text-text-tertiary" />
 				<span class="text-xs tracking-wider text-text-muted uppercase">Feels like</span>
 				<span class="text-base font-medium text-text tabular-nums">
 					<span class="inline-flex items-start">
@@ -67,14 +69,17 @@
 				</span>
 			</div>
 			<div class="flex flex-col items-center gap-1">
+				<Droplets class="h-4 w-4 text-text-tertiary" />
 				<span class="text-xs tracking-wider text-text-muted uppercase">Humidity</span>
 				<span class="text-base font-medium text-text">{weather.current.humidity}%</span>
 			</div>
 			<div class="flex flex-col items-center gap-1">
+				<WindIcon class="h-4 w-4 text-text-tertiary" />
 				<span class="text-xs tracking-wider text-text-muted uppercase">Wind</span>
 				<span class="text-base font-medium text-text">{wind} {windUnit}</span>
 			</div>
 			<div class="flex flex-col items-center gap-1">
+				<Cloud class="h-4 w-4 text-text-tertiary" />
 				<span class="text-xs tracking-wider text-text-muted uppercase">Clouds</span>
 				<span class="text-base font-medium text-text">{weather.current.cloudCover}%</span>
 			</div>
