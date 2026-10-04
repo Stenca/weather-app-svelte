@@ -43,7 +43,7 @@
 		<div class="mt-2 text-8xl leading-none font-light tracking-tight tabular-nums">
 			<span class="inline-flex items-start">
 				<span>{heroTemp.value}</span>
-				<span class="mt-[0.15em] ml-1 text-[0.35em] font-normal">{heroTemp.unit}</span>
+				<span class="mt-[0.15em] text-[0.35em] font-normal">{heroTemp.unit}</span>
 			</span>
 		</div>
 
@@ -64,7 +64,7 @@
 				<span class="text-base font-medium text-text tabular-nums">
 					<span class="inline-flex items-start">
 						<span>{feelsTemp.value}</span>
-						<span class="mt-[0.15em] ml-0.5 text-[0.6em] font-normal">{feelsTemp.unit}</span>
+						<span class="mt-[0.15em] text-[0.6em] font-normal">{feelsTemp.unit}</span>
 					</span>
 				</span>
 			</div>

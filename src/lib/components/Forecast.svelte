@@ -36,14 +36,14 @@
 			<span class="text-xs font-semibold text-text tabular-nums">
 				<span class="inline-flex items-start">
 					<span>{high.value}</span>
-					<span class="mt-[0.15em] ml-0.5 text-[0.6em] font-normal">{high.unit}</span>
+					<span class="mt-[0.15em] text-[0.6em] font-normal">{high.unit}</span>
 				</span>
 			</span>
 
 			<span class="text-xs text-text-muted tabular-nums">
 				<span class="inline-flex items-start">
 					<span>{low.value}</span>
-					<span class="mt-[0.15em] ml-0.5 text-[0.6em] font-normal">{low.unit}</span>
+					<span class="mt-[0.15em] text-[0.6em] font-normal">{low.unit}</span>
 				</span>
 			</span>
 		</div>

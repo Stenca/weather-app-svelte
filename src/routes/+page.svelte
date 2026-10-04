@@ -8,6 +8,9 @@
 	import { StorageService } from '$lib/services/storageService';
 	import { WeatherService } from '$lib/services/weatherService';
 	import Forecast from '$lib/components/Forecast.svelte';
+	import { fly } from 'svelte/transition';
+	import DetailsCard from '$lib/components/DetailsCard.svelte';
+	import { cubicOut } from 'svelte/easing';
 
 	const weatherService = new WeatherService();
 	const storageService = new StorageService();
@@ -26,6 +29,7 @@
 	let weather = $state<Weather | null>(null);
 	let loading = $state(false);
 	let error = $state<string | null>(null);
+	let showDetails = $state(false);
 
 	async function loadWeather(city: City) {
 		loading = true;
@@ -59,7 +63,7 @@
 	}
 
 	function handleToggleDetails() {
-		// later
+		showDetails = !showDetails;
 	}
 
 	onMount(() => {
@@ -78,12 +82,27 @@
 	{:else if error}
 		<p class="text-error-border">{error}</p>
 	{:else if weather}
-		<CurrentCard
-			{weather}
-			units={settings.units}
-			onToggleUnits={handleToggleUnits}
-			onToggleDetails={handleToggleDetails}
-		/>
+		<div class="flex justify-center">
+			<div class="flex items-stretch gap-4" style="width: 41rem;">
+				<div
+					class="flex transition-transform duration-300 ease-out"
+					style="transform: translateX({showDetails ? '0' : '10.5rem'})"
+				>
+					<CurrentCard
+						{weather}
+						units={settings.units}
+						onToggleUnits={handleToggleUnits}
+						onToggleDetails={handleToggleDetails}
+					/>
+				</div>
+
+				{#if showDetails}
+					<div in:fly={{ x: 40, duration: 300, easing: cubicOut }} class="flex">
+						<DetailsCard {weather} units={settings.units} />
+					</div>
+				{/if}
+			</div>
+		</div>
 
 		<Forecast daily={weather.daily} units={settings.units} />
 	{/if}
