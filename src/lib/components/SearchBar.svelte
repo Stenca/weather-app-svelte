@@ -3,10 +3,12 @@
 
 	let {
 		query = $bindable(''),
+		onInput,
 		onSearch,
 		onUseLocation
 	}: {
 		query?: string;
+		onInput: (query: string) => void;
 		onSearch: (query: string) => void;
 		onUseLocation: () => void;
 	} = $props();
@@ -27,6 +29,8 @@
 		class="min-w-0 flex-1 border-none bg-transparent text-sm text-text outline-none placeholder:text-text-faint"
 		placeholder="Search a city..."
 		bind:value={query}
+		oninput={() => onInput?.(query)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && onSearch(query)}
 		autocomplete="off"
 		required
 	/>

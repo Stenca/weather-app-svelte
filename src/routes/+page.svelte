@@ -7,6 +7,7 @@
 	import { SettingsService } from '$lib/services/settingsService';
 	import { StorageService } from '$lib/services/storageService';
 	import { WeatherService } from '$lib/services/weatherService';
+	import CityResults from '$lib/components/CityResults.svelte';
 	import Forecast from '$lib/components/Forecast.svelte';
 	import { fly } from 'svelte/transition';
 	import DetailsCard from '$lib/components/DetailsCard.svelte';
@@ -25,6 +26,8 @@
 	};
 
 	let searchQuery = $state('');
+	let searchResults = $state<City[]>([]);
+	let searchTimeout: ReturnType<typeof setTimeout> | undefined;
 	let settings = $state(settingsService.load());
 	let weather = $state<Weather | null>(null);
 	let loading = $state(false);
@@ -43,6 +46,30 @@
 		}
 	}
 
+	function handleSearchInput(query: string) {
+		searchQuery = query;
+		clearTimeout(searchTimeout);
+
+		if (query.trim().length < 2) {
+			searchResults = [];
+			return;
+		}
+		searchTimeout = setTimeout(async () => {
+			try {
+				searchResults = await weatherService.searchCities(query);
+			} catch {
+				searchResults = [];
+			}
+		}, 300);
+	}
+
+	async function handleSelectCity(city: City) {
+		searchResults = [];
+		searchQuery = '';
+		storageService.saveCity(city);
+		await loadWeather(city);
+	}
+
 	async function handleSearch(query: string) {
 		const cities = await weatherService.searchCities(query);
 		if (cities.length === 0) {
@@ -50,7 +77,7 @@
 			return;
 		}
 		storageService.saveCity(cities[0]);
-		await loadWeather(cities[0]);
+		await handleSelectCity(cities[0]);
 	}
 
 	function handleUseLocation() {
@@ -75,8 +102,19 @@
 <div
 	class="flex min-h-screen flex-col items-center gap-4 bg-linear-to-br from-gradient-1 via-gradient-2 to-gradient-3 p-8"
 >
-	<SearchBar bind:query={searchQuery} onSearch={handleSearch} onUseLocation={handleUseLocation} />
-
+	<div class="relative w-full max-w-md">
+		<SearchBar
+			bind:query={searchQuery}
+			onInput={handleSearchInput}
+			onSearch={handleSearch}
+			onUseLocation={handleUseLocation}
+		/>
+		{#if searchResults.length > 0}
+			<div class="absolute top-full right-0 left-0 z-10 mt-2">
+				<CityResults cities={searchResults} onSelect={handleSelectCity} />
+			</div>
+		{/if}
+	</div>
 	{#if loading}
 		<p class="text-text">Loading...</p>
 	{:else if error}
@@ -97,7 +135,7 @@
 				</div>
 
 				{#if showDetails}
-					<div in:fly={{ x: 40, duration: 300, easing: cubicOut }} class="flex">
+					<div in:fly={{ x: 40, duration: 500, easing: cubicOut }} class="flex">
 						<DetailsCard {weather} units={settings.units} />
 					</div>
 				{/if}
