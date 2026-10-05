@@ -12,6 +12,8 @@
 	import { fly } from 'svelte/transition';
 	import DetailsCard from '$lib/components/DetailsCard.svelte';
 	import { cubicOut } from 'svelte/easing';
+	import { clickOutside } from '$lib/actions/clickOutside';
+	import { escapeKey } from '$lib/actions/escapeKey';
 
 	const weatherService = new WeatherService();
 	const storageService = new StorageService();
@@ -27,12 +29,17 @@
 
 	let searchQuery = $state('');
 	let searchResults = $state<City[]>([]);
+	let showResults = $state(false);
 	let searchTimeout: ReturnType<typeof setTimeout> | undefined;
 	let settings = $state(settingsService.load());
 	let weather = $state<Weather | null>(null);
 	let loading = $state(false);
 	let error = $state<string | null>(null);
 	let showDetails = $state(false);
+
+	function dismissResults() {
+		showResults = false;
+	}
 
 	async function loadWeather(city: City) {
 		loading = true;
@@ -49,6 +56,7 @@
 	function handleSearchInput(query: string) {
 		searchQuery = query;
 		clearTimeout(searchTimeout);
+		showResults = true;
 
 		if (query.trim().length < 2) {
 			searchResults = [];
@@ -63,7 +71,12 @@
 		}, 300);
 	}
 
+	function handleSearchFocus() {
+		if (searchResults.length > 0) showResults = true;
+	}
+
 	async function handleSelectCity(city: City) {
+		showResults = false;
 		searchResults = [];
 		searchQuery = '';
 		storageService.saveCity(city);
@@ -102,15 +115,24 @@
 <div
 	class="flex min-h-screen flex-col items-center gap-4 bg-linear-to-br from-gradient-1 via-gradient-2 to-gradient-3 p-8"
 >
-	<div class="relative w-full max-w-md">
+	<div
+		class="relative w-full max-w-md"
+		use:clickOutside={dismissResults}
+		use:escapeKey={dismissResults}
+	>
 		<SearchBar
 			bind:query={searchQuery}
 			onInput={handleSearchInput}
+			onFocus={handleSearchFocus}
 			onSearch={handleSearch}
 			onUseLocation={handleUseLocation}
 		/>
-		{#if searchResults.length > 0}
-			<div class="absolute top-full right-0 left-0 z-10 mt-2">
+		{#if showResults && searchResults.length > 0}
+			<div
+				class="absolute top-full right-0 left-0 z-10 mt-2"
+				in:fly={{ y: -8, duration: 200, easing: cubicOut }}
+				out:fly={{ y: -8, duration: 150, easing: cubicOut }}
+			>
 				<CityResults cities={searchResults} onSelect={handleSelectCity} />
 			</div>
 		{/if}
