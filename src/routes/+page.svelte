@@ -7,6 +7,7 @@
 	import { SettingsService } from '$lib/services/settingsService';
 	import { StorageService } from '$lib/services/storageService';
 	import { WeatherService } from '$lib/services/weatherService';
+	import { GeolocationService } from '$lib/services/geolocationService';
 	import CityResults from '$lib/components/CityResults.svelte';
 	import Forecast from '$lib/components/Forecast.svelte';
 	import { fly } from 'svelte/transition';
@@ -14,10 +15,12 @@
 	import { cubicOut } from 'svelte/easing';
 	import { clickOutside } from '$lib/actions/clickOutside';
 	import { escapeKey } from '$lib/actions/escapeKey';
+	import { getErrorMessage } from '$lib/utils/errors';
 
 	const weatherService = new WeatherService();
 	const storageService = new StorageService();
 	const settingsService = new SettingsService();
+	const geolocationService = new GeolocationService();
 
 	const DEFAULT_CITY: City = {
 		id: 0,
@@ -47,7 +50,7 @@
 		try {
 			weather = await weatherService.getWeather(city);
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load';
+			error = getErrorMessage(err);
 		} finally {
 			loading = false;
 		}
@@ -93,8 +96,20 @@
 		await handleSelectCity(cities[0]);
 	}
 
-	function handleUseLocation() {
-		// later
+	async function handleUseLocation() {
+		error = null;
+		try {
+			const coords = await geolocationService.getCurrentPosition();
+			const city = await weatherService.reverseGeocode(coords.latitude, coords.longitude);
+			if (!city) {
+				error = 'Could not determine your location';
+				return;
+			}
+			storageService.saveCity(city);
+			await loadWeather(city);
+		} catch (err) {
+			error = getErrorMessage(err);
+		}
 	}
 
 	function handleToggleUnits() {
